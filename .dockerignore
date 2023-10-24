@@ -1,0 +1,14 @@
+.env
+dist
+node_modules
+keys
+
+.git
+.github
+.cache
+
+*.md
+
+docker-compose*
+Dockerfile*
+.gitlab-ci.yml*

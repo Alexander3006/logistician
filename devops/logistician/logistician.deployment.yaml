@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logistician-app
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: logistician-app
+  template:
+    metadata:
+      labels:
+        app: logistician-app
+    spec:
+      containers:
+      - name: logistician-app
+        image: logistician
+        imagePullPolicy: Never
+        ports:
+          - containerPort: 3000
+          - containerPort: 3010
+        envFrom:
+          - configMapRef:
+              name: logistician-dev-env
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 20

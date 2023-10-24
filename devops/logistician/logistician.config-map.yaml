@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logistician-dev-env
+data:
+  MODE: development
+  #DATABASE(postgres)
+  DB_HOST: postgres-service
+  DB_PORT: '5432'
+  DB_USER: postgres
+  DB_PASSWORD: example
+  DB_NAME: mydb
+  # AUTH
+  GOOGLE_AUTH_CLIENT_ID: '155770480637-0nprqjvlcu19tsiv5k88n6eos50fc5im.apps.googleusercontent.com'
+  GOOGLE_AUTH_CLIENT_SECRET: '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'
+  GOOGLE_OAUTH_REDIRECT: 'http://localhost'
+  FACEBOOK_AUTH_CLIENT_ID: '1418529145645085'
+  FACEBOOK_AUTH_CLIENT_SECRET: '19c7d10712ead199c57cd5846c09da94'
+  FACEBOOK_OAUTH_REDIRECT: 'https://somedomain.com/'
+  JWT_ACCESS_TOKEN_SECRET: access_secret
+  JWT_ACCESS_TOKEN_EXPIRATION_TIME: '999999'
+  JWT_REFRESH_TOKEN_SECRET: refresh_secret
+  JWT_REFRESH_TOKEN_EXPIRATION_TIME: '600000'
+  TWO_FACTOR_AUTHENTICATION_APP_NAME: 'rtf'
+  #REDIS
+  REDIS_HOST: redis-service
+  REDIS_PORT: '6379'
+  #MAILGUN
+  MAILGUN_USERNAME: 'api'
+  MAILGUN_API_KEY: '3ff9e147dc31aa08f1ae21e59e4c029b-4e034d9e-11ff912b'
+  MAILGUN_API_URL: 'https://api.mailgun.net'
+  MAILGUN_EMAIL_SENDER: 'test-mail@sandbox7e0971d21ac74f9499c63a3e302ce64c.mailgun.org'
+  MAILGUN_DOMAIN: 'sandbox7e0971d21ac74f9499c63a3e302ce64c.mailgun.org'
+  #CAPTCHA
+  GEETEST_ID: ''
+  GEETEST_KEY: ''
+  DISABLE_CAPTCHA: 'true'
+  #WEBSOCKETS
+  WS_HOST: '0.0.0.0'
+  WS_PORT: '3010'
+  DISABLE_PING_PONG: 'false'

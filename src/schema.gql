@@ -1,0 +1,595 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Currency {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  ticker: String!
+  title: String!
+  precision: Float!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type UserBalance {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  balance: String!
+  userId: String!
+  user: User
+  currencyId: String!
+  currency: Currency
+}
+
+type CargoType {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  description: String!
+}
+
+type OrderRequest {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  orderId: String!
+  order: Order
+  price: Float!
+  insuranceAmount: Float!
+  description: String!
+  carId: String!
+  car: Car
+  ownerId: String!
+  owner: User
+  status: OrderRequestStatuses!
+  locations: [Location!]!
+}
+
+enum OrderRequestStatuses {
+  CREATED
+  ACCEPTED
+  CANCELLED
+}
+
+type BalanceHistory {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  type: BalanceHistoryType!
+  status: BalanceHistoryStatus!
+  inAmount: String!
+  outAmount: String!
+  feeAmount: String!
+  inCurrencyId: String!
+  inCurrency: Currency
+  outCurrencyId: String!
+  outCurrency: Currency
+  feeCurrencyId: String!
+  feeCurrency: Currency
+  userId: String!
+  user: User
+}
+
+enum BalanceHistoryType {
+  DEPOSIT
+  WITHDRAW
+  PAYMENT
+}
+
+enum BalanceHistoryStatus {
+  PENDING
+  CANCELLED
+  COMPLETED
+}
+
+type BalancePayment {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  senderBalanceHistoryId: String
+  senderBalanceHistory: BalanceHistory
+  recipientBalanceHistoryId: String
+  recipientBalanceHistory: BalanceHistory
+  status: BalancePaymentStatus!
+}
+
+enum BalancePaymentStatus {
+  PENDING
+  CANCELLED
+  COMPLETED
+}
+
+type Order {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  description: String!
+  date: DateTime!
+  cargoTypeId: String!
+  cargoType: CargoType
+  price: Float!
+  currencyId: String!
+  insuranceAmount: Float!
+  currency: Currency
+  volume: Float!
+  weight: Float!
+  ownerId: String!
+  owner: User
+  status: OrderStatuses!
+  acceptedRequestId: String!
+  acceptedRequest: OrderRequest
+  balancePaymentId: String
+  balancePayment: BalancePayment
+  balanceCompensationId: String
+  balanceCompensaction: BalancePayment
+  locations: [Location!]
+}
+
+enum OrderStatuses {
+  CREATED
+  ACCEPTED
+  CANCELLED
+  SUCCESS
+  CONFLICT
+}
+
+type PointDTO {
+  latitude: Float!
+  longitude: Float!
+}
+
+type Location {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  coordinates: PointDTO!
+  userId: String
+  carId: String
+  orderId: String
+}
+
+type Car {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  description: String!
+  ownerId: String!
+  owner: User
+  driverId: String
+  driver: User
+  typeId: String!
+  type: CargoType
+  loadCapacity: Float!
+  volume: Float!
+  verified: Boolean!
+  photos: [Image!]
+  locations: [Location!]
+}
+
+type Image {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  key: String!
+  mimetype: String!
+  userId: String
+  carId: String
+  url: String!
+}
+
+type User {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String
+  lastname: String
+  nickname: String
+  phone: String!
+  role: UserRoles!
+  email: String!
+  password: String!
+  isTwoFAEnabled: Boolean!
+  balances: [UserBalance!]
+  photos: [Image!]
+  locations: [Location!]
+}
+
+enum UserRoles {
+  USER
+  ADMIN
+  LOGISTICIAN
+  DRIVER
+  BUSINESS_OWNER
+}
+
+type Document {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  key: String!
+  mimetype: String!
+  type: DocumentType!
+  userId: String
+  carId: String
+  url: String!
+}
+
+enum DocumentType {
+  PASSPORT
+  DRIVER_LICENSE
+  REGISTRATION_CERTIFICATE
+}
+
+type Tokens {
+  access_token: String!
+  refresh_token: String!
+}
+
+type LoginUserResponse {
+  user: User!
+  tokens: Tokens
+}
+
+type TwoFASecret {
+  secret: String!
+  url: String!
+}
+
+type UserPaginated {
+  count: Float!
+  data: [User!]!
+}
+
+type CarPaginated {
+  count: Float!
+  data: [Car!]!
+}
+
+type OrderPaginater {
+  count: Float!
+  data: [Order!]!
+}
+
+type BalanceHistoryStatsByCurrency {
+  currencyId: String!
+  amount: String!
+  count: String!
+}
+
+type BalanceHistoryStatsResponse {
+  statsIn: [BalanceHistoryStatsByCurrency!]!
+  statsOut: [BalanceHistoryStatsByCurrency!]!
+  statsFee: [BalanceHistoryStatsByCurrency!]!
+}
+
+type BalanceHistoryPaginated {
+  count: Float!
+  data: [BalanceHistory!]!
+}
+
+type OrderRequestPaginated {
+  count: Float!
+  data: [OrderRequest!]!
+}
+
+type OrderFeedback {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  comment: String!
+  rating: Float!
+  customerId: String
+  customer: User
+  executorId: String
+  executor: User
+  orderId: String!
+  order: Order
+}
+
+type OrderFeedbackPaginated {
+  count: Float!
+  data: [OrderFeedback!]!
+}
+
+type Query {
+  getHello: String!
+  login(credentials: LoginUserInput!): LoginUserResponse!
+  refreshTokens: LoginUserResponse!
+  getMe: User!
+  sendEmailVerificationCode(email: String!): Boolean!
+  sendPasswordUpdateCode(email: String!): Boolean!
+  getTwoFASecret: TwoFASecret!
+  getFilteredUsers(payload: UserFilterDTO!): UserPaginated!
+  getUserDocuments: [Document!]!
+  getCurrencies: [Currency!]!
+  getFilteredCars(payload: CarFilterDTO!): CarPaginated!
+  getCarDocuments(carId: String!): [Document!]!
+  getCargoTypes: [CargoType!]!
+  getFilteredOrders(payload: OrderFilterDTO!): OrderPaginater!
+  getFilteredOrderRequests(payload: OrderRequestFilterDTO!): OrderRequestPaginated!
+  getFilteredBalanceHistory(payload: BalanceHistorFilterDTO!): BalanceHistoryPaginated!
+  getBalanceHistoryStats(payload: BalanceHistorStatsDTO!): BalanceHistoryStatsResponse!
+  getFilteredOrderFeedbacks(payload: OrderFeedbackFilterDTO!): OrderFeedbackPaginated!
+  getOrderFeedbackStats(payload: OrderFeedbackFilterOptionsDTO!): Float!
+}
+
+input LoginUserInput {
+  strategy: StrategyTypes!
+
+  """2FA code"""
+  code: String
+
+  """Required for local strategy"""
+  email: String
+
+  """Required for local strategy"""
+  password: String
+}
+
+enum StrategyTypes {
+  LOCAL
+  GOOGLE
+  FACEBOOK
+}
+
+input UserFilterDTO {
+  pagination: PaginationParamsDTO = {from: "0", to: "99"}
+  sort: SortParamsDTO = {column: "sequence_id", direction: "ASC"}
+  filter: UserFilterOptions = {}
+}
+
+input PaginationParamsDTO {
+  from: String = "0"
+  to: String = "99"
+}
+
+input SortParamsDTO {
+  column: String = "sequence_id"
+  direction: String = "ASC"
+}
+
+input UserFilterOptions {
+  name: String
+  lastname: String
+  nickname: String
+  email: String
+  role: UserRoles
+}
+
+input CarFilterDTO {
+  pagination: PaginationParamsDTO = {from: "0", to: "99"}
+  sort: SortParamsDTO = {column: "sequence_id", direction: "ASC"}
+  filter: CarFilterOptionsDTO = {}
+}
+
+input CarFilterOptionsDTO {
+  ownerId: String
+  driverId: String
+  typeId: String
+  minLoadCapacity: String
+  maxLoadCapacity: String
+  minVolume: String
+  maxVolume: String
+  verified: Boolean!
+}
+
+input OrderFilterDTO {
+  pagination: PaginationParamsDTO = {from: "0", to: "99"}
+  sort: SortParamsDTO = {column: "sequence_id", direction: "ASC"}
+  filter: OrderFilterOptionsDTO = {}
+}
+
+input OrderFilterOptionsDTO {
+  id: String
+  cargoTypeId: String
+  minDate: DateTime
+  maxDate: DateTime
+  minPrice: Float
+  maxPrice: Float
+  minVolume: Float
+  maxVolume: Float
+  minWeight: Float
+  maxWeight: Float
+  ownerId: String
+  currencyId: String
+  status: String
+  acceptedRequestId: String
+}
+
+input OrderRequestFilterDTO {
+  pagination: PaginationParamsDTO = {from: "0", to: "99"}
+  sort: SortParamsDTO = {column: "sequence_id", direction: "ASC"}
+  filter: OrderRequestFilterOptionsDTO = {}
+}
+
+input OrderRequestFilterOptionsDTO {
+  id: String
+  orderId: String
+  carId: String
+  ownerId: String
+  status: String
+}
+
+input BalanceHistorFilterDTO {
+  pagination: PaginationParamsDTO = {from: "0", to: "99"}
+  sort: SortParamsDTO = {column: "sequence_id", direction: "ASC"}
+  filter: BalanceHistorFilterOptions = {}
+}
+
+input BalanceHistorFilterOptions {
+  id: String
+  type: [BalanceHistoryType!]
+  status: BalanceHistoryStatus
+  paymentMethodId: String
+  inCurrencyId: String
+  outCurrencyId: String
+}
+
+input BalanceHistorStatsDTO {
+  fromDate: DateTime!
+  toDate: DateTime!
+  convertTotalToCurrencyId: String!
+  type: BalanceHistoryType
+  status: BalanceHistoryStatus
+}
+
+input OrderFeedbackFilterDTO {
+  pagination: PaginationParamsDTO = {from: "0", to: "99"}
+  sort: SortParamsDTO = {column: "sequence_id", direction: "ASC"}
+  filter: OrderFeedbackFilterOptionsDTO = {}
+}
+
+input OrderFeedbackFilterOptionsDTO {
+  id: String
+  customerId: String
+  executorId: String
+  orderId: String
+}
+
+type Mutation {
+  registerUser(credentials: RegisterUserInput!): User!
+  uploadUserPhoto(photo: Upload!): Image!
+  uploadUserDocument(documentType: String!, file: Upload!): Document!
+  updateUserLocation(payload: PointInputDTO!): Location!
+  verifyEmail(payload: EmailVerificationPayloadInput!): Boolean!
+  updatePasswordByOldPassword(payload: UpdatePasswordInput!): Boolean!
+  updatePasswordByCode(payload: UpdatePasswordInput!): Boolean!
+  generateTwoFASecret(force: Boolean = false): TwoFASecret!
+  turnOnTwoFA(code: String!): Boolean!
+  turnOffTwoFA(code: String!): Boolean!
+  incrementUserBalance(payload: BalanceUpdateDTO!): UserBalance!
+  decrementUserBalance(payload: BalanceUpdateDTO!): UserBalance!
+  createCurrency(payload: CreateCurrencyDTO!): Currency!
+  updateCurrency(payload: UpdateCurrencyDTO!): Currency!
+  updateCarLocation(carId: String!, payload: PointInputDTO!): Location!
+  createCar(payload: CreateCarDTO!): Car!
+  updateCar(payload: UpdateCarDTO!): Car!
+  deleteCar(carId: String!): Boolean!
+  uploadCarDocument(payload: CarUploadDocumentDTO!, file: Upload!): Document!
+  uploadCarPhoto(carId: String!, file: Upload!): Image!
+  adminCreateCargoType(payload: CreateCargoTypeDTO!): CargoType!
+  adminDeleteCargoType(cargoTypeId: String!): Boolean!
+  createOrder(payload: CreateOrderDTO!): Order!
+  cancelOrder(orderId: String!): Order!
+  executeOrder(orderId: String!): Order!
+  acceptOrderRequest(requestId: String!): Order!
+  createOrderRequest(payload: CreateOrderRequestDTO!): OrderRequest!
+  cancelOrderRequest(orderId: String!): OrderRequest!
+  createOrderFeedback(payload: CreateOrderFeedbackDTO!): OrderFeedback!
+}
+
+input RegisterUserInput {
+  strategy: StrategyTypes!
+
+  """Required for not local strategy"""
+  code: String
+
+  """Required for local strategy"""
+  email: String
+
+  """Required for local strategy"""
+  password: String
+  nickname: String
+  name: String
+  lastname: String
+  phone: String!
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+input PointInputDTO {
+  latitude: Float!
+  longitude: Float!
+}
+
+input EmailVerificationPayloadInput {
+  email: String!
+  code: String!
+}
+
+input UpdatePasswordInput {
+  email: String!
+  password: String!
+  code: String
+  oldPassword: String
+}
+
+input BalanceUpdateDTO {
+  userId: String!
+  currencyId: String!
+  amount: String!
+}
+
+input CreateCurrencyDTO {
+  ticker: String!
+  title: String!
+  precision: Float!
+}
+
+input UpdateCurrencyDTO {
+  ticker: String
+  title: String
+  precision: Float
+  id: String!
+}
+
+input CreateCarDTO {
+  description: String!
+  driverId: String!
+  typeId: String!
+  loadCapacity: Float!
+  volume: Float!
+}
+
+input UpdateCarDTO {
+  description: String
+  driverId: String
+  typeId: String
+  loadCapacity: Float
+  volume: Float
+  id: String!
+}
+
+input CarUploadDocumentDTO {
+  documentType: DocumentType!
+  carId: String!
+}
+
+input CreateCargoTypeDTO {
+  name: String!
+  description: String!
+}
+
+input CreateOrderDTO {
+  description: String!
+  location: PointInputDTO
+  date: DateTime!
+  cargoTypeId: String!
+  price: Float!
+  insuranceAmount: Float!
+  currencyId: String!
+  volume: Float!
+  weight: Float!
+}
+
+input CreateOrderRequestDTO {
+  orderId: String!
+  carId: String!
+  price: Float!
+  insuranceAmount: Float!
+  description: String!
+}
+
+input CreateOrderFeedbackDTO {
+  comment: String
+  rating: Float!
+  orderId: String!
+}
