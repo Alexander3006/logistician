@@ -6,7 +6,7 @@ import {
   Location,
   LocationOwnerMap,
 } from '../entities/location.entity';
-import { PointDTO } from '../dto/point.dto';
+import { PointDTO, PointInputDTO } from '../dto/point.dto';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class LocationCommandService {
   async saveLocation(
     ownerId: string,
     owner: LocationOwner,
-    location: PointDTO,
+    location: PointInputDTO,
     em: EntityManager,
   ): Promise<Location> {
     const repository = em.getRepository(Location);
@@ -29,6 +29,7 @@ export class LocationCommandService {
         type: 'Point',
         coordinates: [location.longitude, location.latitude],
       },
+      description: location.description,
     });
     const query = repository
       .createQueryBuilder()

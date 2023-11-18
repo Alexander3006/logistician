@@ -44,10 +44,12 @@ export class CarResolver {
 
   @ResolveField(() => [Location])
   async locations(@Parent() { id }: User): Promise<Location[]> {
-    const location = await this.locationQueryService.getLocationByOwner(
+    const locations = await this.locationQueryService.getLocationByOwner(
       id,
       LocationOwner.CAR,
+      undefined,
+      1,
     );
-    return [location];
+    return locations;
   }
 }

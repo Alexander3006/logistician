@@ -6,6 +6,7 @@ import {
   IsPositive,
   IsString,
 } from 'class-validator';
+import { AddressInputDTO } from 'src/domain/location/dto/address.dto';
 import { PointInputDTO } from 'src/domain/location/dto/point.dto';
 
 @InputType()
@@ -15,8 +16,8 @@ export class CreateOrderDTO {
   @IsOptional()
   description: string;
 
-  @Field(() => PointInputDTO, { nullable: true })
-  location?: PointInputDTO;
+  @Field(() => [PointInputDTO])
+  locations: PointInputDTO[];
 
   @Field()
   @IsDate()
@@ -47,4 +48,10 @@ export class CreateOrderDTO {
   @Field()
   @IsNumber()
   weight: number;
+
+  @Field(() => [AddressInputDTO])
+  fromAddresses: AddressInputDTO[];
+
+  @Field(() => [AddressInputDTO])
+  toAddresses: AddressInputDTO[];
 }

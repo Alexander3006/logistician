@@ -49,7 +49,6 @@ type OrderRequest {
   ownerId: String!
   owner: User
   status: OrderRequestStatuses!
-  locations: [Location!]!
 }
 
 enum OrderRequestStatuses {
@@ -106,6 +105,18 @@ enum BalancePaymentStatus {
   COMPLETED
 }
 
+type Address {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  orderId: String
+  country: String
+  region: String
+  city: String
+  address: String
+  description: String
+}
+
 type Order {
   id: ID!
   createdAt: DateTime!
@@ -130,6 +141,8 @@ type Order {
   balanceCompensationId: String
   balanceCompensaction: BalancePayment
   locations: [Location!]
+  toAddresses: [Address!]!
+  fromAddresses: [Address!]!
 }
 
 enum OrderStatuses {
@@ -153,6 +166,7 @@ type Location {
   userId: String
   carId: String
   orderId: String
+  description: String
 }
 
 type Car {
@@ -508,6 +522,7 @@ scalar Upload
 input PointInputDTO {
   latitude: Float!
   longitude: Float!
+  description: String
 }
 
 input EmailVerificationPayloadInput {
@@ -570,7 +585,7 @@ input CreateCargoTypeDTO {
 
 input CreateOrderDTO {
   description: String!
-  location: PointInputDTO
+  locations: [PointInputDTO!]!
   date: DateTime!
   cargoTypeId: String!
   price: Float!
@@ -578,6 +593,16 @@ input CreateOrderDTO {
   currencyId: String!
   volume: Float!
   weight: Float!
+  fromAddresses: [AddressInputDTO!]!
+  toAddresses: [AddressInputDTO!]!
+}
+
+input AddressInputDTO {
+  country: String
+  region: String
+  city: String
+  address: String
+  description: String
 }
 
 input CreateOrderRequestDTO {

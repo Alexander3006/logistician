@@ -66,4 +66,8 @@ export class Location extends BaseEntity {
   @ManyToOne(() => Order)
   @JoinColumn({ name: 'order_id' })
   order?: Order;
+
+  @Field({ nullable: true })
+  @Column({ length: 255, nullable: true })
+  description?: string;
 }

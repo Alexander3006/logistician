@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectEntityManager } from '@nestjs/typeorm';
 import { EntityManager } from 'typeorm';
-import { Order, OrderStatuses } from '../entities/order.entity';
+import { AddressType, Order, OrderStatuses } from '../entities/order.entity';
 import { CreateOrderDTO } from '../dto/create-order.dto';
 import { UserBalanceCommandService } from 'src/domain/user/services/balance-command.service';
 import { AppException } from 'src/common/exceptions';
@@ -10,6 +10,8 @@ import { BalancePaymentCommandService } from 'src/domain/balance-history/service
 import { OrderRequestQueryService } from './order-request-query.service';
 import { LocationCommandService } from 'src/domain/location/services/location-command.service';
 import { LocationOwner } from 'src/domain/location/entities/location.entity';
+import { AddressCommandService } from 'src/domain/location/services/address-command.service';
+import { AddressOwner } from 'src/domain/location/entities/addess.entity';
 
 export class OrderCommandServiceException extends AppException {}
 
@@ -22,6 +24,7 @@ export class OrderCommandService {
     private readonly balancePaymentCommandService: BalancePaymentCommandService,
     private readonly orderRequestQueryService: OrderRequestQueryService,
     private readonly locationCommandService: LocationCommandService,
+    private readonly addressCommandService: AddressCommandService,
   ) {}
 
   async createOrder(
@@ -42,21 +45,47 @@ export class OrderCommandService {
         code: 'NOT_ENOUGHT_BALANCE',
         statusCode: 402,
       });
-    const location = payload.location;
-    delete payload.location;
+    const locations = payload.locations;
+    const toAddresses = payload.toAddresses;
+    const fromAddresses = payload.fromAddresses;
+    delete payload.locations;
+    delete payload.toAddresses;
+    delete payload.fromAddresses;
     const entity = Order.create({
       ...payload,
       ownerId: userId,
     });
     const order = await repository.save(entity);
-    if (location) {
-      await this.locationCommandService.saveLocation(
-        order.id,
-        LocationOwner.ORDER,
-        location,
-        em,
-      );
-    }
+    await Promise.all(
+      locations.map((location) =>
+        this.locationCommandService.saveLocation(
+          order.id,
+          LocationOwner.ORDER,
+          location,
+          em,
+        ),
+      ),
+    );
+    await Promise.all(
+      toAddresses.map((address) =>
+        this.addressCommandService.saveAddress(
+          order.id,
+          AddressOwner.ORDER,
+          { ...address, description: AddressType.UNLOADING },
+          em,
+        ),
+      ),
+    );
+    await Promise.all(
+      fromAddresses.map((address) =>
+        this.addressCommandService.saveAddress(
+          order.id,
+          AddressOwner.ORDER,
+          { ...address, description: AddressType.LOADING },
+          em,
+        ),
+      ),
+    );
     return order;
   }
 

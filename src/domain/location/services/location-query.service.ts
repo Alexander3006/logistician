@@ -18,12 +18,13 @@ export class LocationQueryService {
     ownerId: string,
     owner: LocationOwner,
     em?: EntityManager,
-  ): Promise<Location> {
+    limit: number = Number.MAX_SAFE_INTEGER,
+  ): Promise<Location[]> {
     const repository = em
       ? em.getRepository(Location)
       : this.entityManager.getRepository(Location);
 
-    const location = await repository.findOne({
+    const location = await repository.find({
       where: {
         [LocationOwnerMap[owner]]: ownerId,
       },
@@ -32,6 +33,7 @@ export class LocationQueryService {
           direction: 'DESC',
         },
       },
+      take: limit,
     });
     return location;
   }

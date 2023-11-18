@@ -14,6 +14,7 @@ import { OrderRequest } from './order-request.entity';
 import { Currency } from 'src/domain/currency/entities/currency.entity';
 import { BalancePayment } from 'src/domain/balance-history/entities/balance-payment.entity';
 import { Location } from 'src/domain/location/entities/location.entity';
+import { Address } from 'src/domain/location/entities/addess.entity';
 
 export enum OrderStatuses {
   CREATED = 'CREATED',
@@ -21,6 +22,11 @@ export enum OrderStatuses {
   CANCELLED = 'CANCELLED',
   SUCCESS = 'SUCCESS',
   CONFLICT = 'CONFLICT',
+}
+
+export enum AddressType {
+  LOADING = 'LOADING',
+  UNLOADING = 'UNLOADING',
 }
 
 registerEnumType(OrderStatuses, { name: 'OrderStatuses' });
@@ -112,4 +118,7 @@ export class Order extends BaseEntity {
   @Field(() => [Location], { nullable: true })
   @OneToMany(() => Location, (location) => location.order)
   locations?: Location[];
+
+  @OneToMany(() => Address, (address) => address.order)
+  addresses?: Address[];
 }

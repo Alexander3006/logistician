@@ -7,8 +7,8 @@ import * as graphqlUploadExpress from 'graphql-upload/graphqlUploadExpress.js';
 import { otel } from './otel';
 
 async function bootstrap() {
-  await otel.start()
-  
+  await otel.start();
+
   const app = await NestFactory.create(AppModule, {
     snapshot: true,
   });

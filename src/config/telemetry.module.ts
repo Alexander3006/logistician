@@ -1,4 +1,4 @@
-import { OpenTelemetryModule } from "nestjs-otel";
+import { OpenTelemetryModule } from 'nestjs-otel';
 
 export const TelemetryModule = OpenTelemetryModule.forRoot({
   metrics: {

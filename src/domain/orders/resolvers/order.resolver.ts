@@ -1,5 +1,5 @@
 import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
-import { Order } from '../entities/order.entity';
+import { AddressType, Order } from '../entities/order.entity';
 import { CargoTypeQueryService } from 'src/domain/cars/services/cargo-type-query.service';
 import { CurrencyQueryService } from 'src/domain/currency/services/currency-query.service';
 import { UserQueryService } from 'src/domain/user/services/user-query.service';
@@ -10,10 +10,22 @@ import { Currency } from 'src/domain/currency/entities/currency.entity';
 import { CargoType } from 'src/domain/cars/entities/cargo-type.entity';
 import { BalancePayment } from 'src/domain/balance-history/entities/balance-payment.entity';
 import { BalancePaymentQueryService } from 'src/domain/balance-history/services/balance-payment-query.service';
+import { LocationQueryService } from 'src/domain/location/services/location-query.service';
+import {
+  Location,
+  LocationOwner,
+} from 'src/domain/location/entities/location.entity';
+import { AddressQueryService } from 'src/domain/location/services/address-query.service';
+import {
+  Address,
+  AddressOwner,
+} from 'src/domain/location/entities/addess.entity';
 
 @Resolver(() => Order)
 export class OrderResolver {
   constructor(
+    private readonly addressQueryService: AddressQueryService,
+    private readonly locationQueryService: LocationQueryService,
     private readonly cargoTypeQueryService: CargoTypeQueryService,
     private readonly currencyQueryService: CurrencyQueryService,
     private readonly userQueryService: UserQueryService,
@@ -61,5 +73,38 @@ export class OrderResolver {
     return await this.balancePaymentQueryService.getBalancePayment({
       id: balanceCompensationId,
     });
+  }
+
+  @ResolveField(() => [Location])
+  async locations(@Parent() { id }: Order): Promise<Location[]> {
+    const locations = await this.locationQueryService.getLocationByOwner(
+      id,
+      LocationOwner.ORDER,
+    );
+    return locations;
+  }
+
+  @ResolveField(() => [Address])
+  async toAddresses(@Parent() { id }: Order): Promise<Address[]> {
+    const addresses = await this.addressQueryService.getAddressByOwner(
+      id,
+      AddressOwner.ORDER,
+      {
+        description: AddressType.UNLOADING,
+      },
+    );
+    return addresses;
+  }
+
+  @ResolveField(() => [Address])
+  async fromAddresses(@Parent() { id }: Order): Promise<Address[]> {
+    const addresses = await this.addressQueryService.getAddressByOwner(
+      id,
+      AddressOwner.ORDER,
+      {
+        description: AddressType.LOADING,
+      },
+    );
+    return addresses;
   }
 }

@@ -16,4 +16,7 @@ export class PointInputDTO {
 
   @Field()
   longitude: number;
+
+  @Field({ nullable: true })
+  description?: string;
 }

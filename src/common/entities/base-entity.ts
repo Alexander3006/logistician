@@ -15,7 +15,7 @@ export class BaseEntity extends BaseEntityOrm {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   @Generated('increment')
   sequence_id: number;
 
