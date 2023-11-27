@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
-import { MailService } from 'src/infrastructure/mail/services/mail.service';
 import { RedisStorageService } from 'src/infrastructure/memory-storage/services/redis-storage.service';
-import { Locales, Templates } from 'src/infrastructure/mail/types';
+import { Templates } from 'src/infrastructure/mail/types';
+import { Locales, NotificationTransport } from 'src/domain/notification/types';
+import { NotificationService } from 'src/domain/notification/services/notification.service';
 
 export class EmailVerificationServiceError extends Error {}
 
@@ -14,7 +15,7 @@ export class EmailVerificationService {
   constructor(
     @InjectRepository(User)
     private readonly userRepositoty: Repository<User>,
-    private readonly mailService: MailService,
+    private readonly notificationService: NotificationService,
     private readonly redisStorageService: RedisStorageService,
   ) {}
 
@@ -37,12 +38,17 @@ export class EmailVerificationService {
     const code = this.generateCode();
     const key = `email-verification:${user.email}`;
     await this.redisStorageService.set(key, code, this.ttl);
-    const result = await this.mailService.send({
-      recipient: user.email,
-      locale: Locales.EN,
-      template: Templates.EMAIL_VERIFICATION,
-      variables: { code },
-    });
+    const result = await this.notificationService.notify(
+      NotificationTransport.MAIL,
+      {
+        event: Templates.EMAIL_VERIFICATION,
+        recipients: [user.id],
+        locale: Locales.EN,
+        data: { code },
+        indexed: false,
+      },
+      this.ttl,
+    );
     return result;
   }
 

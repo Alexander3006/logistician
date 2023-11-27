@@ -14,7 +14,7 @@ export class ConnectionsState {
     this.clients = new Map<string, Set<WebSocket>>();
     this.subscriptions = new Map<string, WeakSet<WebSocket>>();
     const disablePingPong =
-      configService.get<boolean>('DISABLE_PING_PONG') ?? true;
+      configService.get<boolean>('DISABLE_PING_PONG') ?? false;
     if (!disablePingPong) {
       this.startPingPong();
     }

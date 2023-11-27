@@ -7,6 +7,8 @@ import { JWTPayload } from '../interfaces/jwt-token.payload';
 import { User } from 'src/domain/user/entities/user.entity';
 import { UserQueryService } from 'src/domain/user/services/user-query.service';
 import { UserWithSessionId } from '../decorators/auth-user.decorator';
+import { IncomingMessage } from 'http';
+import { SessionQueryService } from 'src/domain/user/services/session-query.service';
 
 export const StrategyName = 'jwt';
 
@@ -15,6 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, StrategyName) {
   constructor(
     private readonly configService: ConfigService,
     private readonly userQueryService: UserQueryService,
+    private readonly sessionQueryService: SessionQueryService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -25,11 +28,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, StrategyName) {
   }
 
   async validate(
-    req: Request,
+    req: Request | IncomingMessage,
     payload: JWTPayload,
   ): Promise<UserWithSessionId | boolean> {
-    const user = await this.userQueryService.getUser({ id: payload.id });
+    const session = await this.sessionQueryService.getSession(
+      payload.sessionId,
+    );
+    if (!session || !session?.active) return false;
+    const user = session.user;
+    // const user = await this.userQueryService.getUser({ id: payload.id });
     if (!user || !user.isEmailVerified) return false;
-    return { ...user, sessionId: payload.sessionId } as UserWithSessionId;
+    return {
+      ...user,
+      sessionId: payload.sessionId,
+      locale: session.locale,
+    } as UserWithSessionId;
   }
 }

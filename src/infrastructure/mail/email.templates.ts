@@ -1,4 +1,5 @@
-import { Locales, Templates } from './types';
+import { Locales } from 'src/domain/notification/types';
+import { Templates } from './types';
 
 export const MailerSubject = {
   [Templates.EMAIL_VERIFICATION]: {

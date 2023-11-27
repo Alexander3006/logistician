@@ -1,4 +1,5 @@
-import { Templates, Locales } from '../types';
+import { Locales } from 'src/domain/notification/types';
+import { Templates } from '../types';
 
 export class SendMailDTO {
   recipient: string;

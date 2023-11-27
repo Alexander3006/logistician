@@ -14,6 +14,10 @@ export class UserSession extends BaseEntity {
   @Column({ nullable: true, default: '' })
   ip: string;
 
+  @Field({ nullable: true })
+  @Column({ length: 255, nullable: true, default: '' })
+  locale?: string;
+
   @Field(() => Boolean, { nullable: false })
   @Column({ nullable: false, default: true })
   active: boolean;

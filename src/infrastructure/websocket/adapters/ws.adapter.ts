@@ -15,9 +15,12 @@ import { ConnectionsState } from '../services/connection-state.service';
 import { JWTPayload } from 'src/infrastructure/auth/interfaces/jwt-token.payload';
 import {
   ExecutionContext,
+  HttpServer,
   INestApplication,
   WsArgumentsHost,
 } from '@nestjs/common/interfaces';
+import { randomUUID } from 'crypto';
+import { JwtStrategy } from 'src/infrastructure/auth/strategies/jwt.strategy';
 
 const AUTH_SOCKET_KEY = 'CLIENT_AUTH';
 
@@ -35,13 +38,16 @@ export const InitCustomWebSocketAdapter = (
 ): INestApplication => {
   const configService = app.get(ConfigService);
   const connectionsState = app.get(ConnectionsState);
+  const authStrategy = app.get(JwtStrategy);
   const jwtService = app.get(JWTTokenService);
   app.useWebSocketAdapter(
     new CustomWebSocketAdapter(
       app,
       configService,
+      authStrategy,
       jwtService,
       connectionsState,
+      app.getHttpServer(),
     ),
   );
   return app;
@@ -55,8 +61,10 @@ export class CustomWebSocketAdapter
   constructor(
     app: INestApplicationContext,
     private readonly configService: ConfigService,
+    private readonly authStrategy: JwtStrategy,
     private readonly jwtService: JWTTokenService,
     private readonly connectionState: ConnectionsState,
+    private readonly server?: HttpServer,
   ) {
     super(app);
     this._logger = new Logger(CustomWebSocketAdapter.name);
@@ -65,9 +73,11 @@ export class CustomWebSocketAdapter
   public create(): Server {
     const host = this.configService.get<string>('WS_HOST') || '0.0.0.0';
     const port = this.configService.get<number>('WS_PORT') || 3001;
-    const server = createServer(/*{ ...ssl() }*/).listen(port, host, () => {
-      this._logger.log(`The server ws://${host}:${port} has been started`);
-    });
+    const server =
+      this.server ??
+      createServer(/*{ ...ssl() }*/).listen(port, host, () => {
+        this._logger.log(`The server ws://${host}:${port} has been started`);
+      });
     const wss = new Server({
       server: server,
       clientTracking: false,
@@ -83,13 +93,18 @@ export class CustomWebSocketAdapter
       try {
         const params = new URL(req.url || '/', 'ws://0.0.0.0').searchParams;
         const token = params.get('token');
-        if (!token) throw new WsException(`No authentication token`);
-        const payload = await this.jwtService
-          .verifyAccessToken(token)
-          .catch(() => ({
-            id: null,
-          }));
-        if (!params) throw new WsException(`Invalid access token`);
+        // if (!token) throw new WsException(`No authentication token`);
+        const payload = token
+          ? await this.jwtService.verifyAccessToken(token).catch(() => {
+              throw new WsException(`Invalid access token`);
+            })
+          : {
+              id: randomUUID(),
+            };
+        const user = token
+          ? await this.authStrategy.validate(req, payload as JWTPayload)
+          : payload;
+        if (!user) throw new WsException(`Invalid access token`);
         this.connectionState.registerSocket(payload.id, socket);
         socket.once('close', () =>
           this.connectionState.removeSocket(payload.id, socket),

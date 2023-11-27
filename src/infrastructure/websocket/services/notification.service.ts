@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Redis } from 'ioredis';
 import { RedisService } from 'nestjs-redis';
 import { ConnectionsState } from './connection-state.service';
+import { WebsocketNotificationPayload } from '../types';
 
 const EMIT_WEBSOCKET_EVENT = 'EMIT_WEBSOCKET_EVENT';
 
@@ -22,16 +23,18 @@ export class WebsocketNotificationService {
     this.listen();
     //test
     // setInterval(() => {
-    //   this.notify('super_event', {a: 1, b: 's', c: null});
-    // }, 5000)
+    //   this.notify('super_event', { a: 1, b: 's', c: null });
+    // }, 5000);
   }
 
   private listen() {
     this.subscriber.subscribe(EMIT_WEBSOCKET_EVENT);
     this.subscriber.on('message', async (channel, payload) => {
       if (channel !== EMIT_WEBSOCKET_EVENT) return;
-      const { event, body, userIds } = JSON.parse(payload);
-      await this.connectionState.sendMessage(event, body, userIds);
+      const { event, body, users } = JSON.parse(
+        payload,
+      ) as WebsocketNotificationPayload<any>;
+      await this.connectionState.sendMessage(event, body, users);
     });
   }
 
@@ -39,7 +42,7 @@ export class WebsocketNotificationService {
     const message = JSON.stringify({
       event,
       body: payload,
-      userIds: userIds,
+      users: userIds,
     });
     await this.publisher.publish(EMIT_WEBSOCKET_EVENT, message);
   }

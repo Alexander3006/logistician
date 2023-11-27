@@ -28,6 +28,11 @@ export const ConfigModule = CM.forRoot({
     //redis
     REDIS_HOST: Joi.string().required(),
     REDIS_PORT: Joi.number().port().required(),
+    // rabbitmq
+    RABBITMQ_HOST: Joi.string().required(),
+    RABBITMQ_PORT: Joi.number().port().required(),
+    RABBITMQ_USER: Joi.string().required(),
+    RABBITMQ_PASSWORD: Joi.string().required(),
     //mailgun
     MAILGUN_USERNAME: Joi.string().required(),
     MAILGUN_API_KEY: Joi.string().required(),

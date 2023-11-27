@@ -3,13 +3,12 @@ import {
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
-  WsResponse,
 } from '@nestjs/websockets';
 import { ConnectionsState } from '../services/connection-state.service';
 import { Logger } from '@nestjs/common';
 import { SocketJWTPayload } from '../adapters/ws.adapter';
-import { JWTPayload } from 'src/infrastructure/auth/interfaces/jwt-token.payload';
 import WebSocket from 'ws';
+import { User } from 'src/domain/user/entities/user.entity';
 
 @WebSocketGateway({ path: 'ws' })
 export class MainWebsocketGateway {
@@ -20,7 +19,7 @@ export class MainWebsocketGateway {
   async handleSubscribeMessage(
     @ConnectedSocket() socket: WebSocket,
     @MessageBody() data: string,
-    @SocketJWTPayload() jwtPaylod: JWTPayload,
+    @SocketJWTPayload() _: User | { id: string },
   ) {
     try {
       await this.connectionsState.subscribe(socket, data);

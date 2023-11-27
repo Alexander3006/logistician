@@ -4,6 +4,8 @@ services:
   redis:
     image: redis
     container_name: logistician_redis
+    volumes:
+      - redis_data:/data
     ports:
       - "6379:6379"
     networks:
@@ -30,21 +32,27 @@ services:
       - STORAGE_TYPE=mem
     ports:
       - 9411:9411
+    networks:
+      - backend
   
-  # rabbitmq:
-  #   image: rabbitmq
-  #   container_name: rtf_rabbitmq
-  #   ports:
-  #     - "5672:5672"
-  #     - "15672:15672"
-  #   environment:
-  #     RABBITMQ_DEFAULT_USER: guest
-  #     RABBITMQ_DEFAULT_PASS: guest
-  #   networks:
-  #     - app_network
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: logistician_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:  
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - backend
 
 volumes:
+  redis_data:
   postgres_data:
+  rabbitmq_data:
 
 networks:
   backend:

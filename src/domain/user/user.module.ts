@@ -31,6 +31,7 @@ import { ImageModule } from '../images/image.module';
 import { DocumentModule } from '../documents/document.module';
 import { UserVerificationSetuperService } from './services/user-verification-setuper.service';
 import { LocationModule } from '../location/location.module';
+import { NotificationModule } from '../notification/notification.module';
 
 const rateLimiter = RateLimiterModule.registerAsync({
   useFactory: (
@@ -56,7 +57,7 @@ const rateLimiter = RateLimiterModule.registerAsync({
     TypeOrmModule.forFeature([User, UserSession, UserBalance]),
     AuthModule,
     MemoryStorageModule,
-    MailModule,
+    NotificationModule,
     CurrencyModule,
     ImageModule,
     DocumentModule,
