@@ -25,6 +25,11 @@ data:
   #REDIS
   REDIS_HOST: redis-service
   REDIS_PORT: '6379'
+  # RABBITMQ
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_PORT: '5672'
+  RABBITMQ_USER: guest
+  RABBITMQ_PASSWORD: guest
   #MAILGUN
   MAILGUN_USERNAME: 'api'
   MAILGUN_API_KEY: '3ff9e147dc31aa08f1ae21e59e4c029b-4e034d9e-11ff912b'
@@ -36,6 +41,16 @@ data:
   GEETEST_KEY: ''
   DISABLE_CAPTCHA: 'true'
   #WEBSOCKETS
-  WS_HOST: '0.0.0.0'
-  WS_PORT: '3010'
+  # WS_HOST: '0.0.0.0'
+  # WS_PORT: '3000'
   DISABLE_PING_PONG: 'false'
+  # TELEMETRY
+  ZIPKIN_URL: http://zipkin-service:9411/api/v2/spans
+  #AWS S3
+  AWS_S3_ENDPOINT: 's3.eu-north-1.amazonaws.com'
+  AWS_S3_REGION: 'eu-north-1'
+  AWS_S3_ACCESS_KEY_ID: 'AKIA5XOGIXN4LJ5WVO35'
+  AWS_S3_SECRET_ACCESS_KEY: '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'
+  # LOCAL FILE STORAGE
+  LOCAL_FILE_STORAGE_BASE_PATH: '/home/alex/code/logistician/.data'
+  LOCAL_FILE_SIGN_URL_KEY: 'secret'
